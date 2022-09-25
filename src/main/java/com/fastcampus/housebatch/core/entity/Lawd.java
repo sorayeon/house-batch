@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Setter()
 @ToString
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "lawd")
+@EqualsAndHashCode(of = {"lawdCd", "lawdDong", "exist"})
 public class Lawd {
 
     @Id
@@ -39,5 +41,11 @@ public class Lawd {
         this.lawdCd = lawdCd;
         this.lawdDong = lawdDong;
         this.exist = exist;
+    }
+
+    public void updateLawd(Lawd lawd) {
+        this.lawdCd = lawd.getLawdCd();
+        this.lawdDong = lawd.getLawdDong();
+        this.exist = lawd.getExist();
     }
 }
