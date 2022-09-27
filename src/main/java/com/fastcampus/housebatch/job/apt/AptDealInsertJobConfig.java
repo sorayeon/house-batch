@@ -2,7 +2,7 @@ package com.fastcampus.housebatch.job.apt;
 
 import com.fastcampus.housebatch.adapter.ApartmentApiResource;
 import com.fastcampus.housebatch.core.dto.AptDealDto;
-import com.fastcampus.housebatch.core.repository.LawdQueryRepository;
+import com.fastcampus.housebatch.core.repository.LawdRepository;
 import com.fastcampus.housebatch.job.validator.LawdCdParameterValidator;
 import com.fastcampus.housebatch.job.validator.YearMonthParameterValidator;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class AptDealInsertJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final ApartmentApiResource apartmentApiResource;
-    private final LawdQueryRepository lawdQueryRepository;
+    private final LawdRepository lawdRepository;
 
     @Bean
     public Job aptDealInsertJob(
@@ -72,7 +72,7 @@ public class AptDealInsertJobConfig {
     @Bean
     public Tasklet guLawdCdTasklet() {
         return (contribution, chunkContext) -> {
-            lawdQueryRepository.findDistinctGuLawdCd()
+            lawdRepository.findDistinctGuLawdCd()
                     .forEach(System.out::println);
             return RepeatStatus.FINISHED;
         };
