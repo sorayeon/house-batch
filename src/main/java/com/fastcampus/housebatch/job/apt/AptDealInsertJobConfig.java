@@ -1,5 +1,6 @@
 package com.fastcampus.housebatch.job.apt;
 
+import com.fastcampus.housebatch.adapter.ApartmentApiResource;
 import com.fastcampus.housebatch.core.dto.AptDealDto;
 import com.fastcampus.housebatch.job.validator.FilePathParameterValidator;
 import lombok.RequiredArgsConstructor;
@@ -20,18 +21,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
+import java.time.YearMonth;
+
 @Configuration
 @RequiredArgsConstructor
 @Slf4j
 public class AptDealInsertJobConfig {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
+    private final ApartmentApiResource apartmentApiResource;
 
     @Bean
     public Job aptDealInsertJob(Step aptDealInsertStep) {
         return jobBuilderFactory.get("aptDealInsertJob")
                 .incrementer(new RunIdIncrementer())
-                .validator(new FilePathParameterValidator())
                 .start(aptDealInsertStep)
                 .build();
     }
@@ -52,12 +55,11 @@ public class AptDealInsertJobConfig {
     @StepScope
     @Bean
     public StaxEventItemReader<AptDealDto> aptDealResourceReader(
-            @Value("#{jobParameters['filePath']}") String filePath,
             Jaxb2Marshaller jaxb2Marshaller
     ) {
         return new StaxEventItemReaderBuilder<AptDealDto>()
                 .name("aptDealResourceReader")
-                .resource(new ClassPathResource(filePath))
+                .resource(apartmentApiResource.getResource("41135", YearMonth.of(2021, 7)))
                 .addFragmentRootElements("item")
                 .unmarshaller(jaxb2Marshaller)
                 .build();
