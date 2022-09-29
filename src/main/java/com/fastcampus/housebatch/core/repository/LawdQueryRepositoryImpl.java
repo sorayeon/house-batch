@@ -20,6 +20,7 @@ public class LawdQueryRepositoryImpl extends QuerydslRepositorySupport implement
                 .where(lawd.lawdCd.like("%00000"),
                         lawd.lawdCd.notLike("%00000000"),
                         lawd.exist.eq(true))
+                .limit(10)
                 .fetch();
     }
 }
