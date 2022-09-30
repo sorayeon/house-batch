@@ -2,9 +2,13 @@ package com.fastcampus.housebatch.core.dto;
 
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.util.StringUtils;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 아파트 실거래가 API 의 각각의 거래 정보를 담는 객체
@@ -36,7 +40,7 @@ public class AptDealDto {
     private Integer day;
 
     @XmlElement(name = "전용면적")
-    private Double exclusiveArea;
+    private BigDecimal exclusiveArea;
 
     @XmlElement(name = "지번")
     private String jibun;
@@ -48,8 +52,28 @@ public class AptDealDto {
     private Integer floor;
 
     @XmlElement(name = "해제사유발생일")
-    private String dealCanceledDate;
+    private String dealCanceledDate; // 21.07.30
 
     @XmlElement(name = "해제여부")
-    private String dealCanceled;
+    private String dealCanceled; // O
+
+    public Long getDealAmount() {
+        return Long.parseLong(dealAmount.replaceAll(",", "").trim());
+    }
+
+    public boolean isDealCanceled() {
+        return "O".equals(dealCanceled.trim());
+    }
+
+    public LocalDate getDealCanceledDate() {
+        if (! StringUtils.hasText(dealCanceledDate)) {
+            return null;
+        }
+
+        return LocalDate.parse(dealCanceledDate.trim(), DateTimeFormatter.ofPattern("yy.MM.dd"));
+    }
+
+    public LocalDate getDealDate() {
+        return LocalDate.of(year, month, day);
+    }
 }
