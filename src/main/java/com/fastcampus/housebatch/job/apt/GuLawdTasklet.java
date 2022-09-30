@@ -71,6 +71,8 @@ public class GuLawdTasklet implements Tasklet {
     }
 
     private ExecutionContext getExecutionContext(ChunkContext chunkContext) {
+        // ExecutionContext 사용시 주의1) 읽기전용 Map 으로 만들어지며 (수정불가)
+        // chunkContext.getStepContext().getJobExecutionContext().;
         StepExecution stepExecution = chunkContext.getStepContext().getStepExecution();
         return stepExecution.getJobExecution().getExecutionContext();
     }

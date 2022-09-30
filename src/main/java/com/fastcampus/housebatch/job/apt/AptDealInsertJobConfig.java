@@ -83,6 +83,8 @@ public class AptDealInsertJobConfig {
     @StepScope
     @Bean
     public Tasklet contextPrintTasklet(@Value("#{jobExecutionContext['guLawdCd']}") String guLawdCd) {
+        // ExecutionContext 사용시 주의2) @Value("#{jobExecutionContext['guLawdCd']}")
+        // - @JobScope 에서 사용한다면 처음 넘어온값이 변경없이 계속 사용되어 원하는 결과를 얻지 못함
         return (contribution, chunkContext) -> {
             log.info("[contextPrintStep] guLawdCd={}", guLawdCd);
             return RepeatStatus.FINISHED;
