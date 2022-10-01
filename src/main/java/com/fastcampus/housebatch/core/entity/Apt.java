@@ -52,7 +52,7 @@ public class Apt {
         this.builtYear = builtYear;
     }
 
-    public static Apt of(AptDealDto dto) {
+    public static Apt from(AptDealDto dto) {
         return Apt.builder()
                 .aptName(dto.getAptName().trim())
                 .guLawdCd(dto.getRegionalCode().trim())
