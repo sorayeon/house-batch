@@ -3,30 +3,27 @@ package com.fastcampus.housebatch.job.apt;
 import com.fastcampus.housebatch.adapter.ApartmentApiResource;
 import com.fastcampus.housebatch.core.dto.AptDealDto;
 import com.fastcampus.housebatch.core.repository.LawdRepository;
+import com.fastcampus.housebatch.core.service.AptDealService;
 import com.fastcampus.housebatch.job.validator.YearMonthParameterValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.*;
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.job.CompositeJobParametersValidator;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.step.tasklet.Tasklet;
-import org.springframework.batch.item.ExecutionContext;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.batch.item.xml.builder.StaxEventItemReaderBuilder;
-import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 
 import java.time.YearMonth;
-import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -39,19 +36,15 @@ public class AptDealInsertJobConfig {
     @Bean
     public Job aptDealInsertJob(
             Step guLawdCdStep,
-            Step contextPrintStep
-//            Step aptDealInsertStep
+            Step aptDealInsertStep
     ) {
         return jobBuilderFactory.get("aptDealInsertJob")
                 .incrementer(new RunIdIncrementer())
                 .validator(new YearMonthParameterValidator())
                 .start(guLawdCdStep)
-                .on("CONTINUABLE")
-                .to(contextPrintStep)
-                .next(guLawdCdStep)
+                .on("CONTINUABLE").to(aptDealInsertStep).next(guLawdCdStep)
                 .from(guLawdCdStep)
-                .on("*")
-                .end()
+                .on("*").end()
                 .end()
                 .build();
     }
@@ -68,27 +61,6 @@ public class AptDealInsertJobConfig {
     @Bean
     public Tasklet guLawdCdTasklet(LawdRepository lawdRepository) {
         return new GuLawdTasklet(lawdRepository);
-    }
-
-    @JobScope
-    @Bean
-    public Step contextPrintStep(
-            Tasklet contextPrintTasklet
-    ) {
-        return stepBuilderFactory.get("contextPrintStep")
-                .tasklet(contextPrintTasklet)
-                .build();
-    }
-
-    @StepScope
-    @Bean
-    public Tasklet contextPrintTasklet(@Value("#{jobExecutionContext['guLawdCd']}") String guLawdCd) {
-        // ExecutionContext 사용시 주의2) @Value("#{jobExecutionContext['guLawdCd']}")
-        // - @JobScope 에서 사용한다면 처음 넘어온값이 변경없이 계속 사용되어 원하는 결과를 얻지 못함
-        return (contribution, chunkContext) -> {
-            log.info("[contextPrintStep] guLawdCd={}", guLawdCd);
-            return RepeatStatus.FINISHED;
-        };
     }
 
     @JobScope
@@ -111,6 +83,8 @@ public class AptDealInsertJobConfig {
             @Value("#{jobExecutionContext['guLawdCd']}") String guLawdCd,
             Jaxb2Marshaller jaxb2Marshaller
     ) {
+        // ExecutionContext 사용시 주의2) @Value("#{jobExecutionContext['var']}") <- StepScope 에서 사용
+        // (JobScope 에서 사용한다면 처음 넘어온값이 변경없이 계속 사용되어 원하는 결과를 얻지 못함)
         return new StaxEventItemReaderBuilder<AptDealDto>()
                 .name("aptDealResourceReader")
                 .resource(apartmentApiResource.getResource(guLawdCd, YearMonth.parse(yearMonth)))
@@ -129,10 +103,10 @@ public class AptDealInsertJobConfig {
 
     @StepScope
     @Bean
-    public ItemWriter<AptDealDto> aptDealWriter() {
+    public ItemWriter<AptDealDto> aptDealWriter(AptDealService aptDealService) {
         return items -> {
-            items.forEach(System.out::println);
-            System.out.println("============ Writing Completed ============="); // chunkSize 만큼씩 처리
+            items.forEach(aptDealService::upsert);
+            log.info("============ Writing Completed ============="); // chunkSize 만큼씩 처리
         };
     }
 }

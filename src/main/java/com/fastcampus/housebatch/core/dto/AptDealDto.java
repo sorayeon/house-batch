@@ -7,8 +7,10 @@ import org.springframework.util.StringUtils;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 /**
  * 아파트 실거래가 API 의 각각의 거래 정보를 담는 객체
@@ -61,10 +63,12 @@ public class AptDealDto {
         return Long.parseLong(dealAmount.replaceAll(",", "").trim());
     }
 
+    // 취소된 계약은 O로 리턴
     public boolean isDealCanceled() {
         return "O".equals(dealCanceled.trim());
     }
 
+    // 취소된 계약일자 yy.MM.dd -> LocalDate 로 변경
     public LocalDate getDealCanceledDate() {
         if (! StringUtils.hasText(dealCanceledDate)) {
             return null;
@@ -73,6 +77,17 @@ public class AptDealDto {
         return LocalDate.parse(dealCanceledDate.trim(), DateTimeFormatter.ofPattern("yy.MM.dd"));
     }
 
+    // 지번이 null (xml 에 node 가 없는경우) -> ""
+    public String getJibun() {
+        return Optional.ofNullable(jibun).orElse("");
+    }
+
+    // 소수점 2자리 이하 버림 -> DB의 전용면적이 소숫점 2자리
+    public BigDecimal getExclusiveArea() {
+        return exclusiveArea.setScale(2, RoundingMode.FLOOR);
+    }
+
+    // 거래 년월일 -> LocalDate 로 변경
     public LocalDate getDealDate() {
         return LocalDate.of(year, month, day);
     }
