@@ -2,22 +2,15 @@ package com.fastcampus.housebatch.core.entity;
 
 import com.fastcampus.housebatch.core.dto.AptDealDto;
 import lombok.*;
-import lombok.extern.java.Log;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @ToString
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "apt")
-public class Apt {
+public class Apt extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long aptId;
@@ -36,12 +29,6 @@ public class Apt {
 
     @Column(nullable = false)
     private Integer builtYear;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @Builder
     public Apt(String aptName, String guLawdCd, String jibun, String dong, Integer builtYear) {

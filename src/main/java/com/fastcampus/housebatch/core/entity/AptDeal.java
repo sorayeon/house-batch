@@ -2,22 +2,17 @@ package com.fastcampus.housebatch.core.entity;
 
 import com.fastcampus.housebatch.core.dto.AptDealDto;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
 @Table(name = "apt_deal")
-public class AptDeal {
+public class AptDeal extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,12 +40,6 @@ public class AptDeal {
 
     @Column
     private LocalDate dealCanceledDate;
-
-    @CreatedDate
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     @Builder
     public AptDeal(Apt apt, BigDecimal exclusiveArea, LocalDate dealDate, Long dealAmount, Integer floor, Boolean dealCanceled, LocalDate dealCanceledDate) {
