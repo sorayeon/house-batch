@@ -48,3 +48,7 @@ spring:
       on-profile: test
   jpa:
     database: h2
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false
