@@ -72,6 +72,9 @@ cmake-build-*/
 out/
 bin/
 
+# querydsl
+/src/main/generated
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
