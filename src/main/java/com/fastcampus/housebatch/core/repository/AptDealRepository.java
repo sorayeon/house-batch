@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public interface AptDealRepository extends JpaRepository<AptDeal, Long> {
-    Optional<AptDeal> findByAptAndExclusiveAreaAndDealDateAndDealAmountAndFloor(Apt apt, BigDecimal exclusiveArea, LocalDate dealDate, Long dealAmount, Integer floor);
+public interface AptDealRepository extends JpaRepository<AptDeal, Long>, AptDealQueryRepository {
+    Optional<AptDeal> findByAptAndExclusiveAreaAndDealDateAndDealAmountAndFloor(
+            Apt apt, BigDecimal exclusiveArea, LocalDate dealDate, Long dealAmount, Integer floor);
 }

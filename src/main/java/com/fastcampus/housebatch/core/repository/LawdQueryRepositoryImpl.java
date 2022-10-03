@@ -13,7 +13,7 @@ public class LawdQueryRepositoryImpl extends QuerydslRepositorySupport implement
     public LawdQueryRepositoryImpl() {
         super(Lawd.class);
     }
-
+    @Override
     public List<String> findDistinctGuLawdCd() {
         return from(lawd)
                 .select(lawd.lawdCd.substring(0, 5))
