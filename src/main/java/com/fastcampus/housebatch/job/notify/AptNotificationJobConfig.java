@@ -1,5 +1,6 @@
 package com.fastcampus.housebatch.job.notify;
 
+import com.fastcampus.housebatch.adapter.SendService;
 import com.fastcampus.housebatch.core.dto.AptDto;
 import com.fastcampus.housebatch.core.dto.NotificationDto;
 import com.fastcampus.housebatch.core.entity.AptNotification;
@@ -104,7 +105,7 @@ public class AptNotificationJobConfig {
 
     @StepScope
     @Bean
-    public ItemWriter<NotificationDto> notificationDtoItemWriter() {
-        return items -> items.forEach(item -> log.info(item.toMessage()));
+    public ItemWriter<NotificationDto> notificationDtoItemWriter(SendService sendService) {
+        return items -> items.forEach(item -> sendService.send(item.getEmail(), item.toMessage()));
     }
 }

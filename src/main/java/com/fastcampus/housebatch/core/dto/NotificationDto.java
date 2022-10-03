@@ -1,13 +1,14 @@
 package com.fastcampus.housebatch.core.dto;
 
 import lombok.Builder;
-import org.springframework.data.util.Pair;
+import lombok.Getter;
 
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Builder
+@Getter
 public class NotificationDto {
 
     private String email;

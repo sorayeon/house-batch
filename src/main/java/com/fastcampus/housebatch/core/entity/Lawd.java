@@ -9,7 +9,7 @@ import javax.persistence.*;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "lawd")
-@EqualsAndHashCode(of = {"lawdCd", "lawdDong", "exist"})
+@EqualsAndHashCode(of = {"lawdCd", "lawdDong", "exist"}, callSuper = false)
 public class Lawd extends BaseTimeEntity {
 
     @Id
