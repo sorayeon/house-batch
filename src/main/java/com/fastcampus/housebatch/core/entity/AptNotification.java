@@ -1,9 +1,6 @@
 package com.fastcampus.housebatch.core.entity;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -26,4 +23,10 @@ public class AptNotification extends BaseTimeEntity {
     @Column(nullable = false)
     private Boolean enabled = false;
 
+    @Builder
+    public AptNotification(String email, String guLawdCd, boolean enabled) {
+        this.email = email;
+        this.guLawdCd = guLawdCd;
+        this.enabled = enabled;
+    }
 }
